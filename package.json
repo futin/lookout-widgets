@@ -1,0 +1,19 @@
+{
+  "name": "lookout-widgets",
+  "version": "0.1.0",
+  "description": "Serve Lookout widget catalog contract v1 from plain declarations, with the contract validator and a test kit.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --import tsx --test test/contract/*.test.ts"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}
