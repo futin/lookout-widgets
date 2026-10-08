@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --import tsx --test test/contract/*.test.ts"
+    "test": "node --import tsx --test test/contract/*.test.ts test/producer/*.test.ts"
   },
   "devDependencies": {
     "tsx": "4.23.15",
