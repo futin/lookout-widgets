@@ -104,6 +104,27 @@ export function createHubHandler({ app, widgets, onDrop = (d) => console.warn('l
     return checked.ok ? reply(200, checked.data) : fail(500, checked.reason);
   }
 
+  async function options(decl: WidgetDecl, paramId: string): Promise<HubReply> {
+    const load = decl.params?.find((p) => p.id === paramId)?.loadOptions;
+    if (load === undefined) return fail(404, 'not found');
+    const opts: unknown = await load();
+    const valid = (o: unknown) => {
+      const { value, label } = (o ?? {}) as { value?: unknown; label?: unknown };
+      return typeof value === 'string' && value !== '' && typeof label === 'string' && label !== '';
+    };
+    return Array.isArray(opts) && opts.every(valid) ? reply(200, { options: opts }) : fail(500, 'invalid option');
+  }
+
+  async function action(decl: WidgetDecl, actionId: string, rowId: string | undefined, body: unknown): Promise<HubReply> {
+    const a = decl.actions?.find((x) => x.id === actionId);
+    if (a === undefined) return fail(404, 'not found');
+    const raw = body !== null && typeof body === 'object' ? (body as { input?: unknown }).input : undefined;
+    const r: unknown = await a.run(typeof raw === 'string' ? raw : undefined, rowId);
+    const { ok, message } = (r ?? {}) as { ok?: unknown; message?: unknown };
+    if (typeof ok !== 'boolean' || (message !== undefined && typeof message !== 'string')) return fail(500, 'invalid action reply');
+    return reply(200, message === undefined ? { ok } : { ok, message });
+  }
+
   async function route(req: HubRequest): Promise<HubReply | null> {
     const root = catalogPath();
     if (req.path !== root && !req.path.startsWith(`${root}/`)) return null;
@@ -111,9 +132,23 @@ export function createHubHandler({ app, widgets, onDrop = (d) => console.warn('l
 
     if (req.path === root) return req.method === 'GET' ? reply(200, catalog) : fail(404, 'not found');
     const segs = req.path.slice(root.length + 1).split('/');
-    if (segs.length === 1 && segs[0] !== '' && req.method === 'GET') {
+    const get = req.method === 'GET';
+    if (segs.length === 1 && segs[0] !== '' && get) {
       const decl = decls.get(segs[0]);
       return decl === undefined ? fail(404, `unknown widget ${segs[0]}`) : data(decl, req.query);
+    }
+    const decl = decls.get(segs[0]);
+    if (decl === undefined) return fail(404, 'not found');
+    if (segs.length === 4 && segs[1] === 'params' && segs[3] === 'options' && get) return options(decl, segs[2]);
+    if (segs.length === 3 && segs[1] === 'actions' && !get) return action(decl, segs[2], undefined, req.body);
+    if (segs.length === 5 && segs[1] === 'rows' && segs[3] === 'actions' && !get) {
+      let rowId: string;
+      try {
+        rowId = decodeURIComponent(segs[2]);
+      } catch {
+        return fail(404, 'not found');
+      }
+      if (rowId !== '') return action(decl, segs[4], rowId, req.body);
     }
     return fail(404, 'not found');
   }
