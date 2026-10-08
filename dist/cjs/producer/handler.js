@@ -13,6 +13,8 @@ class HubError extends Error {
 const reply = (status, json) => ({ status, json });
 const fail = (status, error) => reply(status, { error });
 const messageOf = (e) => (e instanceof Error ? e.message : String(e));
+// A URL parser collapses these segments (`%2E` spellings too), so a row action path carrying one reaches another route: `..` lands on the widget action.
+const dotSegment = (rowId) => rowId === '.' || rowId === '..';
 /** Throws when the catalog as a whole is invalid — a programming error the app's own tests catch. */
 function createHubHandler({ app, widgets, onDrop = (d) => console.warn('lookout-widgets: dropped', d), now = () => new Date() }) {
     const result = (0, validate_js_1.validateCatalog)((0, build_js_1.buildCatalog)(app, widgets));
@@ -42,6 +44,8 @@ function createHubHandler({ app, widgets, onDrop = (d) => console.warn('lookout-
     function expand(decl, ids, rowId) {
         if (!Array.isArray(ids))
             return ids; // not ours to fix: the validator names what is wrong with it
+        if (rowId !== undefined && dotSegment(rowId))
+            throw new HubError(500, `row id ${rowId} cannot carry actions`);
         return ids.map((id) => {
             const a = (decl.actions ?? []).find((x) => x.id === id);
             if (a === undefined)
@@ -130,7 +134,7 @@ function createHubHandler({ app, widgets, onDrop = (d) => console.warn('lookout-
             catch {
                 return fail(404, 'not found');
             }
-            if (rowId !== '')
+            if (rowId !== '' && !dotSegment(rowId))
                 return action(decl, segs[4], rowId, req.body);
         }
         return fail(404, 'not found');

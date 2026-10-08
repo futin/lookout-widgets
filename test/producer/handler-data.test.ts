@@ -174,6 +174,21 @@ describe('action ids in load results', () => {
     assert.deepEqual(r, { status: 200, json: { updatedAt: NOW, value: 1, actions: [{ id: 'reset', label: 'Reset', path: '/api/hub/widgets/s/actions/reset' }] } });
   });
 
+  // A URL parser collapses a `.` or `..` segment, so such a row's action path would reach another route (`..` → the widget action, no row id).
+  for (const id of ['.', '..']) {
+    it(`answers 500 for row id ${JSON.stringify(id)} carrying actions`, async () => {
+      const w = runs(['retry']);
+      const { h } = handler([{ ...w, load: () => ({ rows: [{ id, title: 'T', actions: ['retry'] }] }) }]);
+      assert.deepEqual(await get(h, '/api/hub/widgets/runs'), { status: 500, json: { error: `row id ${id} cannot carry actions` } });
+    });
+  }
+
+  it('serves row id ".." with no actions', async () => {
+    const w = runs([]);
+    const { h } = handler([{ ...w, load: () => ({ rows: [{ id: '..', title: 'T' }] }) }]);
+    assert.equal((await get(h, '/api/hub/widgets/runs'))?.status, 200);
+  });
+
   it('answers 500 for an action id the widget does not declare', async () => {
     const { h } = handler([runs(['nope'])]);
     assert.deepEqual(await get(h, '/api/hub/widgets/runs'), { status: 500, json: { error: 'unknown action nope' } });

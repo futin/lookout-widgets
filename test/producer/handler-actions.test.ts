@@ -83,11 +83,21 @@ describe('actions', () => {
     });
   }
 
-  for (const rowId of ['a/b', '50%', 'x y', 'q?x=1', 'ünï', '..']) {
-    it(`round-trips row id ${JSON.stringify(rowId)}`, async () => {
+  // Through URL parsing, as every real mount does: a path that only round-trips unparsed proves nothing about a live request.
+  for (const rowId of ['a/b', '50%', 'x y', 'q?x=1', 'ünï', '...', '.x', 'x..']) {
+    it(`round-trips row id ${JSON.stringify(rowId)} through URL parsing`, async () => {
       reset();
-      assert.equal((await h.handle(req('POST', rowActionPath('w', rowId, 'go'))))?.status, 200);
+      const path = new URL(rowActionPath('w', rowId, 'go'), 'http://x').pathname;
+      assert.equal((await h.handle(req('POST', path)))?.status, 200);
       assert.deepEqual(calls, [[undefined, rowId]]);
+    });
+  }
+
+  for (const seg of ['.', '..', '%2E', '%2e%2E']) {
+    it(`answers 404 for the dot row segment ${seg}, without running the action`, async () => {
+      reset();
+      assert.equal((await h.handle(req('POST', `/api/hub/widgets/w/rows/${seg}/actions/go`)))?.status, 404);
+      assert.deepEqual(calls, []);
     });
   }
 
