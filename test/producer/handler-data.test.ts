@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateCatalog, type Dropped } from '../../src/contract/validate.js';
-import { buildCatalog } from '../../src/producer/build.js';
-import type { ParamValues, WidgetDecl } from '../../src/producer/declare.js';
-import { createHubHandler, type HubReply } from '../../src/producer/handler.js';
+import { validateCatalog, type Dropped } from '../../dist/esm/contract/validate.js';
+import { buildCatalog } from '../../dist/esm/producer/build.js';
+import type { ParamValues, WidgetDecl } from '../../dist/esm/producer/declare.js';
+import { createHubHandler, type HubReply } from '../../dist/esm/producer/handler.js';
 
 const NOW = '2026-10-08T00:00:00.000Z';
 const now = () => new Date(NOW);

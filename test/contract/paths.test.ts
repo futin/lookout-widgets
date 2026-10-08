@@ -1,7 +1,7 @@
 // Ported from lookout/shared/contract/paths.test.ts (jest). One `it` per jest case; each `it.each` row is its own `it`.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { isRelativePath } from '../../src/contract/paths.js';
+import { isRelativePath } from '../../dist/esm/contract/paths.js';
 
 describe('isRelativePath', () => {
   for (const p of ['/', '/api/x', '/a?b=c', '/a#frag', '/api/hub/widgets/usage']) {

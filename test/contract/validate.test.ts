@@ -2,9 +2,9 @@
 // (`expect.stringContaining`, `expect.any`, `toMatchObject`) become explicit asserts or the `assertMatches` subset check below.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { examples } from '../../src/examples/index.js';
-import { validateCatalog, validateData } from '../../src/contract/validate.js';
-import type { RenderType } from '../../src/contract/types.js';
+import { examples } from '../../dist/esm/examples/index.js';
+import { validateCatalog, validateData } from '../../dist/esm/contract/validate.js';
+import type { RenderType } from '../../dist/esm/contract/types.js';
 
 const UPDATED = '2026-10-07T12:00:00.000Z';
 

@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import type { WidgetDecl } from '../src/producer/declare.js';
-import { createHubHandler } from '../src/producer/handler.js';
-import { checkWidgets } from '../src/testkit/index.js';
+import type { WidgetDecl } from '../dist/esm/producer/declare.js';
+import { createHubHandler } from '../dist/esm/producer/handler.js';
+import { checkWidgets } from '../dist/esm/testkit/index.js';
 
 const gauge = (over: Partial<WidgetDecl> = {}) =>
   ({ id: 'usage', title: 'Usage', render: 'gauge', refreshSeconds: 60, load: () => ({ bars: [{ label: '5-hour', percent: 40 }] }), ...over }) as WidgetDecl;

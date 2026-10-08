@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { rowActionPath } from '../../src/producer/build.js';
-import type { ActionDecl, ActionReply, WidgetDecl } from '../../src/producer/declare.js';
-import { createHubHandler } from '../../src/producer/handler.js';
+import { rowActionPath } from '../../dist/esm/producer/build.js';
+import type { ActionDecl, ActionReply, WidgetDecl } from '../../dist/esm/producer/declare.js';
+import { createHubHandler } from '../../dist/esm/producer/handler.js';
 
 const req = (method: string, path: string, body?: unknown) => ({ method, path, query: new URLSearchParams(), body });
 

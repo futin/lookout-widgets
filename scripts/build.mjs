@@ -3,10 +3,12 @@
 import { execFileSync } from 'node:child_process';
 import { rmSync, writeFileSync } from 'node:fs';
 
-const tsc = (project) => execFileSync(process.execPath, ['node_modules/typescript/bin/tsc', '-p', project], { stdio: 'inherit' });
+// An optional argument redirects the output; test/dist-drift.test.ts builds into a tmp dir this way and compares it with the committed dist/.
+const out = process.argv[2] ?? 'dist';
+const tsc = (project, outDir) => execFileSync(process.execPath, ['node_modules/typescript/bin/tsc', '-p', project, '--outDir', outDir], { stdio: 'inherit' });
 
-rmSync('dist', { recursive: true, force: true });
-tsc('tsconfig.esm.json');
-tsc('tsconfig.cjs.json');
+rmSync(out, { recursive: true, force: true });
+tsc('tsconfig.esm.json', `${out}/esm`);
+tsc('tsconfig.cjs.json', `${out}/cjs`);
 // The package is "type": "module"; this marker makes Node read dist/cjs/*.js as CommonJS.
-writeFileSync('dist/cjs/package.json', '{"type":"commonjs"}\n');
+writeFileSync(`${out}/cjs/package.json`, '{"type":"commonjs"}\n');

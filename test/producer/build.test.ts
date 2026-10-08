@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { isRelativePath } from '../../src/contract/paths.js';
-import { actionPath, buildCatalog, catalogPath, dataPath, optionsPath, rowActionPath } from '../../src/producer/build.js';
-import type { ActionDecl, ParamDecl, WidgetDecl } from '../../src/producer/declare.js';
+import { isRelativePath } from '../../dist/esm/contract/paths.js';
+import { actionPath, buildCatalog, catalogPath, dataPath, optionsPath, rowActionPath } from '../../dist/esm/producer/build.js';
+import type { ActionDecl, ParamDecl, WidgetDecl } from '../../dist/esm/producer/declare.js';
 
 const gauge = (over: Partial<WidgetDecl> = {}): WidgetDecl =>
   ({ id: 'usage', title: 'U', render: 'gauge', refreshSeconds: 60, load: () => ({ bars: [{ label: 'a', percent: 1 }] }), ...over }) as WidgetDecl;

@@ -7,10 +7,25 @@
   "engines": {
     "node": ">=20"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./testkit": {
+      "types": "./dist/esm/testkit/index.d.ts",
+      "import": "./dist/esm/testkit/index.js",
+      "require": "./dist/cjs/testkit/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "node scripts/build.mjs",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --import tsx --test test/contract/*.test.ts test/producer/*.test.ts test/*.test.ts"
+    "test": "node --import tsx --test test/contract/*.test.ts test/producer/*.test.ts test/*.test.ts test/*.test.cjs"
   },
   "devDependencies": {
     "tsx": "4.23.15",
