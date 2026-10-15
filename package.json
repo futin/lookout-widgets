@@ -1,6 +1,6 @@
 {
   "name": "lookout-widgets",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Serve Lookout widget catalog contract v1 from plain declarations, with the contract validator and a test kit.",
   "license": "MIT",
   "type": "module",

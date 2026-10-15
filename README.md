@@ -12,14 +12,15 @@ From a git tag — `dist/` is committed, so nothing builds at install time:
 
 ```json
 "dependencies": {
-  "lookout-widgets": "github:futin/lookout-widgets#v0.1.0"
+  "lookout-widgets": "github:futin/lookout-widgets#v0.2.0"
 }
 ```
 
 ## Declare widgets
 
 A declaration is a plain object. `render` picks the shape `load` must return: `stat` → `{ value }`, `gauge` → `{ bars }`, `list` → `{ rows }`,
-`status` → `{ state }`. `load` may be async, and never returns `updatedAt` — the handler stamps it. Actions are declared once on the widget and named
+`status` → `{ state }` (optionally `lines`, label/value pairs under the headline, each with its own `state`).
+`load` may be async, and never returns `updatedAt` — the handler stamps it. Actions are declared once on the widget and named
 by id from `load`'s result; the handler expands each id into a contract action with its derived path. Params arrive as a `Record<string, string>` of
 the declared params the request supplied. A row whose id is `.` or `..` cannot carry actions — a URL parser collapses that path segment — and its widget
 answers 500 naming it.

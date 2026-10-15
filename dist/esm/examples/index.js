@@ -88,7 +88,16 @@ const runs = {
         }
     ]
 };
-const health = { updatedAt, state: 'ok', label: 'All systems normal', detail: 'Last check passed' };
+const health = {
+    updatedAt,
+    state: 'ok',
+    label: 'All systems normal',
+    detail: 'Last check passed',
+    lines: [
+        { label: 'api', value: '12 ms', state: 'ok' },
+        { label: 'queue', value: '3 jobs' }
+    ]
+};
 export const examples = {
     catalogs: { full, empty },
     data: { queue, usage, runs, health }

@@ -84,11 +84,19 @@ export interface ListData {
     rows: Row[];
     total?: number;
 }
+/** One label/value pair under a status headline, e.g. a project and its progress. `state` colours the line's own dot; no `state`, no dot. */
+export interface StatusLine {
+    label: string;
+    value: string;
+    state?: State;
+}
 export interface StatusData {
     updatedAt: string;
     state: State;
     label: string;
     detail?: string;
+    /** Rendered under the headline in the order sent. An empty list is dropped by the validator. */
+    lines?: StatusLine[];
     actions?: Action[];
 }
 export type WidgetData = StatData | GaugeData | ListData | StatusData;

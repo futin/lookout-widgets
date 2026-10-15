@@ -97,7 +97,16 @@ const runs: ListData = {
   ]
 };
 
-const health: StatusData = { updatedAt, state: 'ok', label: 'All systems normal', detail: 'Last check passed' };
+const health: StatusData = {
+  updatedAt,
+  state: 'ok',
+  label: 'All systems normal',
+  detail: 'Last check passed',
+  lines: [
+    { label: 'api', value: '12 ms', state: 'ok' },
+    { label: 'queue', value: '3 jobs' }
+  ]
+};
 
 export const examples = {
   catalogs: { full, empty },

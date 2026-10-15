@@ -395,6 +395,55 @@ describe('validateData', () => {
     it('requires a label', () => {
       assert.equal(validateData('status', { updatedAt: UPDATED, state: 'ok' }).ok, false);
     });
+
+    describe('lines', () => {
+      const status = (over: Record<string, unknown> = {}) => ({ updatedAt: UPDATED, state: 'ok', label: 'x', ...over });
+      const reason = (raw: unknown) => {
+        const r = validateData('status', raw);
+        if (r.ok) throw new Error('expected a failure');
+        return r.reason;
+      };
+      const linesOf = (raw: unknown) => (okData('status', raw) as { lines?: Record<string, unknown>[] }).lines;
+
+      it('leaves the key out when lines are absent', () => {
+        assert.equal('lines' in okData('status', status()), false);
+      });
+
+      it('rejects lines that are not an array', () => {
+        assert.match(reason(status({ lines: 'x' })), /lines/);
+      });
+
+      it('rejects a line without a value', () => {
+        assert.match(reason(status({ lines: [{ label: 'a' }] })), /lines\[0\]\.value/);
+      });
+
+      it('rejects a line with an empty label', () => {
+        assert.match(reason(status({ lines: [{ label: '', value: '1' }] })), /lines\[0\]\.label/);
+      });
+
+      it('rejects a line with an unknown state', () => {
+        assert.match(reason(status({ lines: [{ label: 'a', value: '1', state: 'running' }] })), /lines\[0\]\.state/);
+      });
+
+      it('rejects a line that is not an object', () => {
+        assert.match(reason(status({ lines: [{ label: 'a', value: '1' }, 7] })), /lines\[1\]/);
+      });
+
+      it('drops an empty list', () => {
+        assert.equal('lines' in okData('status', status({ lines: [] })), false);
+      });
+
+      it('keeps lines in order, a state only where one was sent', () => {
+        const lines = linesOf(status({ lines: [{ label: 'a', value: '1/2' }, { label: 'b', value: '0/0', state: 'warn' }] }));
+        assert.deepEqual(lines, [{ label: 'a', value: '1/2' }, { label: 'b', value: '0/0', state: 'warn' }]);
+        assert.equal('state' in (lines ?? [])[0], false);
+      });
+
+      it('round-trips the health example, which carries lines', () => {
+        assert.deepEqual(okData('status', examples.data.health), examples.data.health);
+        assert.ok((linesOf(examples.data.health) ?? []).length > 0);
+      });
+    });
   });
 
   for (const raw of [null, 'x', 3, []]) {

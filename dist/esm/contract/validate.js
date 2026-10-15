@@ -206,6 +206,19 @@ function parseBar(raw, index) {
         resetsAt: o.resetsAt
     });
 }
+function parseLine(raw, index) {
+    const where = `lines[${index}]`;
+    const o = object(raw, where);
+    const w = `${where}.`;
+    return compact({ label: str(o, 'label', w), value: str(o, 'value', w), state: optOneOf(o, 'state', STATES, w) });
+}
+// `compact` drops only `undefined`, so an empty list is turned into one here: a consumer never sees `lines: []`.
+function parseLines(o) {
+    if (o.lines === undefined)
+        return undefined;
+    const lines = array(o, 'lines', '').map(parseLine);
+    return lines.length === 0 ? undefined : lines;
+}
 function parseData(render, o) {
     if (!isDateString(o.updatedAt))
         fail('updatedAt must be an ISO-8601 date');
@@ -241,6 +254,7 @@ function parseData(render, o) {
                 state: oneOf(o, 'state', STATES, ''),
                 label: str(o, 'label', ''),
                 detail: optStr(o, 'detail', ''),
+                lines: parseLines(o),
                 actions: parseActions(o)
             });
         default:
